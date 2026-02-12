@@ -12,7 +12,13 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
+        return [
+            [
+            'id' => 1,
+            'title' => 'Test',
+            'body' => 'Post body',  
+            ]
+        ];
     }
 
     /**
@@ -20,7 +26,15 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // $data = $request->all();
+        $data = $request->only('title', 'body');
+        return response()->json([
+            'id' => 1,
+            'title' => $data['title'],
+            'body' => $data['body'],     
+        ], 201)
+        // ->setStatusCode(201); 
+        ;
     }
 
     /**
@@ -28,7 +42,13 @@ class PostController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return response()->json([
+            'id' => 1,
+            'title' => 
+            'title',
+            'body' => 
+            'body',    
+        ]);
     }
 
     /**
@@ -36,7 +56,16 @@ class PostController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $data = $request->validate([
+            'title' => 'required|string|min:2',
+            'body' => [
+                'required',
+                'string',
+                'min:2',
+            ]
+        ]);
+
+        return $data;
     }
 
     /**
@@ -44,6 +73,6 @@ class PostController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        return response()->noContent();
     }
 }
