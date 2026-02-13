@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StorePostRequest;
+use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
@@ -13,25 +15,21 @@ class PostController extends Controller
      */
     public function index()
     {
-        return Post::all();
+        return PostResource::collection(Post::with('author')->paginate(2));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StorePostRequest $request)
     {
-         $data = $request->validate([
-            'title' => 'required|string|min:2',
-            'body' => ['required', 'string','min:2',
-            ]
-        ]);
+         $data = $request->validated();
 
         $data['author_id'] = 1;
 
         $post = Post::create($data);
 
-        return response()->json($post, 201)
+        return new PostResource($post);
         // ->setStatusCode(201); 
         ;
     }
@@ -41,7 +39,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        return response()->json($post);
+        return response()->json(new PostResource($post));
     }
 
     /**
@@ -50,17 +48,12 @@ class PostController extends Controller
     public function update(Request $request, Post $post)
     {
         $data = $request->validate([
-            'title' => 'required|string|min:2',
-            'body' => [
-                'required',
-                'string',
-                'min:2',
-            ]
+            
         ]);
 
         $post->update($data);
 
-        return $post;
+        return new PostResource($post);
     }
 
     /**
